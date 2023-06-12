@@ -6,22 +6,25 @@ import (
 
 func BuildQueryImportancePrompt(content string) string {
 	promptBuilder := &strings.Builder{}
-	promptBuilder.WriteString("在数字1到10的范围内，1表示非常平凡的事（比如：刷牙、吃早饭），10表示非常极其深刻的事（比如：分手、考上大学），评估下面这件事的重要度，返回一个1到10的整数")
-	return ""
+	promptBuilder.WriteString("在数字1到10的范围内，1表示非常平凡的事（比如：刷牙、吃早饭），10表示非常极其深刻的事（比如：分手、考上大学），评估下面这件事的重要度，事件：" + content + "，返回一个1到10的整数,不需要多余信息和标点符号")
+	return promptBuilder.String()
 }
 
 func BuildMakePlanPrompt(time, agentName, agentSummary, agentStatus, topRankMemories string) string {
 	promptBuilder := &strings.Builder{}
 	promptBuilder.WriteString(buildAgentDescription(time, agentName, agentSummary, agentStatus, "", topRankMemories))
-	promptBuilder.WriteString("为" + agentName + "制定今日计划，返回内容格式为：{'startTime': '12:0:0', 'endTIme': '12:30:00', 'content': '吃午饭'}")
+	promptBuilder.WriteString("以上为" + agentName + "的人物描述和记忆，为人物制定未来24小时的计划。返回指定json格式，不要有多余内容。")
 	return promptBuilder.String()
 }
 
 func BuildObservationReplyPrompt(time, agentName, agentSummary, agentStatus, observation, topRankMemories string) string {
 	promptBuilder := &strings.Builder{}
 	promptBuilder.WriteString(buildAgentDescription(time, agentName, agentSummary, agentStatus, observation, topRankMemories))
-	promptBuilder.WriteString(agentName + "是否需要对观察到的事情做出反应，如果需要则返回反应行为，格式为：{'actionType': 'talk', 'location': '超市', 'from': '李明', 'to': '张伟', 'content': '最近怎么样'}" +
-		"如果不需要则返回{'actionType': 'none', 'location': '', 'from': '', 'to': '', 'content': ''}")
+	promptBuilder.WriteString("根据上述人物描述和记忆内容，判断" + agentName + "是否需要对观察到的事情做出反应，如果需要则返回一个反应行为，actionType参数只有1，2和3，1表示移动，2表示对话聊天，3表示其他，其他时优先做自己的当天计划，：" +
+		"{\"actionType\": 1, \"targetLocation\":10, \"emoji\": \"🚶\"} {\"actionType\": 2, \"talkTo\":\"李梦\",\"content\":\"你今天要去学校吗？\",\"emoji\": \"😊\"}" +
+		"{\"actionType\": 3,\"content\":\"在家里看书\", \"emoji\": \"📖\"}" +
+		"尽可能做出反应，如果不需要做出反应则返回移动行为，只返回json数据")
+	//"如果不需要做出反应则返回{\"actionType\": 3, \"content\":\"保持\", \"emoji\": \"😐\"}，只返回json数据")
 	return promptBuilder.String()
 }
 
@@ -56,58 +59,3 @@ func buildAgentDescription(time, agentName, agentSummary, agentStatus, observati
 	descBuilder.WriteString("相关记忆如下：" + topRankMemories + "\n")
 	return descBuilder.String()
 }
-
-//// BuildInitiateChatPrompt 发起聊天prompt
-//func BuildInitiateChatPrompt(agentName, agentStatus, observation string, relevantMemories []string) string {
-//	promptBuilder := &strings.Builder{}
-//	promptBuilder.WriteString("现在时间是：")
-//	promptBuilder.WriteString(time.Now().String())
-//	promptBuilder.WriteString("\n")
-//	promptBuilder.WriteString(agentName)
-//	promptBuilder.WriteString("的当前状态为：")
-//	promptBuilder.WriteString(agentStatus)
-//	promptBuilder.WriteString("\n")
-//	promptBuilder.WriteString("观察到的内容为：")
-//	promptBuilder.WriteString(observation)
-//	promptBuilder.WriteString("\n")
-//	promptBuilder.WriteString(agentName)
-//	promptBuilder.WriteString("记忆中的相关内容如下：")
-//	for _, memory := range relevantMemories {
-//		promptBuilder.WriteString(memory)
-//		promptBuilder.WriteString("。")
-//	}
-//	promptBuilder.WriteString("\n")
-//	promptBuilder.WriteString("他会说什么")
-//
-//	return promptBuilder.String()
-//}
-//
-//// BuildContinueChatPrompt 回复聊天prompt
-//func BuildContinueChatPrompt(agentName, agentStatus, observation string, relevantMemories []string, chatHistories []string) string {
-//	promptBuilder := &strings.Builder{}
-//	promptBuilder.WriteString("现在时间是：")
-//	promptBuilder.WriteString(time.Now().String())
-//	promptBuilder.WriteString("\n")
-//	promptBuilder.WriteString(agentName)
-//	promptBuilder.WriteString("的当前状态为：")
-//	promptBuilder.WriteString(agentStatus)
-//	promptBuilder.WriteString("\n")
-//	promptBuilder.WriteString("观察到的内容为：")
-//	promptBuilder.WriteString(observation)
-//	promptBuilder.WriteString("\n")
-//	promptBuilder.WriteString(agentName)
-//	promptBuilder.WriteString("记忆中的相关内容如下：")
-//	for _, memory := range relevantMemories {
-//		promptBuilder.WriteString(memory)
-//		promptBuilder.WriteString("。")
-//	}
-//	promptBuilder.WriteString("\n")
-//	promptBuilder.WriteString("下面是他们的对话历史记录：")
-//	for _, history := range chatHistories {
-//		promptBuilder.WriteString(history)
-//		promptBuilder.WriteString("。")
-//	}
-//	promptBuilder.WriteString("\n")
-//	promptBuilder.WriteString("他该回应什么")
-//	return promptBuilder.String()
-//}

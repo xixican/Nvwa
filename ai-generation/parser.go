@@ -1,9 +1,9 @@
 package ai_generation
 
 import (
-	"Nvwa/common"
 	"Nvwa/logger"
-	"encoding/json"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -21,13 +21,13 @@ func ParseImportance(response *ChatResponse) int {
 		return 0
 	}
 	importanceContent := response.Choices[0].Message.Content
-	model := &ImportanceModel{}
-	err := json.Unmarshal([]byte(importanceContent), model)
+	logger.NvwaLog.Debugf("importance content:%s", importanceContent)
+	importance, err := strconv.Atoi(importanceContent)
 	if err != nil {
-		logger.NvwaLog.Errorf("解析importance错误， err=%s", err.Error())
-		return 0
+		logger.NvwaLog.Errorf("ParseImportance error:%v", err)
+		return importance
 	}
-	return model.Importance
+	return importance
 }
 
 func ParseReflectionQuestion(response *ChatResponse) []string {
@@ -45,22 +45,34 @@ func ParseAbstractMemory(response *ChatResponse) string {
 	return response.Choices[0].Message.Content
 }
 
-func ParsePlan(response *ChatResponse) []*common.AgentPlan {
+func ParsePlan(response *ChatResponse) string {
 	if response == nil {
-		return nil
+		return ""
 	}
-	planContent := strings.TrimSpace(response.Choices[0].Message.Content)
-	plan := make([]*common.AgentPlan, 8)
-	json.Unmarshal([]byte(planContent), plan)
-	return plan
+	content := response.Choices[0].Message.Content
+	//logger.NvwaLog.Debugf("make plan 的返回内容为\n：%s", content)
+	replaceContent := strings.ReplaceAll(content, "，", ",")
+	reg := regexp.MustCompile("\\s+") // 正则表达式中的 "\s+" 匹配的是所有的空格字符，包括空格、制表符以及换行符等。
+	planContent := reg.ReplaceAllString(replaceContent, "")
+	//反序列化，不需要make,因为make操作被封装到Unmarshal函数
+	//var plan []*common.AgentPlan
+	//err := json.Unmarshal([]byte(planContent), &plan)
+	//if err != nil {
+	//	logger.NvwaLog.Errorf("parse plan error:%v", err)
+	//}
+	//return plan
+	return planContent
 }
 
-func ParseAction(response *ChatResponse) *common.AgentAction {
+func ParseAction(response *ChatResponse) string {
 	if response == nil {
-		return nil
+		return ""
 	}
-	actionContent := strings.TrimSpace(response.Choices[0].Message.Content)
-	action := &common.AgentAction{}
-	json.Unmarshal([]byte(actionContent), action)
-	return action
+	content := response.Choices[0].Message.Content
+	replaceContent := strings.ReplaceAll(content, "，", ",")
+	reg := regexp.MustCompile("\\s+") // 正则表达式中的 "\s+" 匹配的是所有的空格字符，包括空格、制表符以及换行符等。
+	actionContent := reg.ReplaceAllString(replaceContent, "")
+	//action := &common.AgentAction{}
+	//json.Unmarshal([]byte(actionContent), action)
+	return actionContent
 }

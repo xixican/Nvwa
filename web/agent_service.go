@@ -45,11 +45,12 @@ func (s *AgentService) NewObservation(ctx *gin.Context) {
 	if err != nil {
 		responseFailedWithMessage(err.Error(), ctx)
 	}
-	agentId := request.AgentId
+	agentId := request.Who
 	currentTime := request.CurrentTime
-	observation := request.Observation
+	at := request.At
+	peopleNearBy := request.PeopleNearBy
 	var actions interface{}
-	actions, err = agent.NewObservation(agentId, currentTime, observation)
+	actions, err = agent.NewObservation(agentId, currentTime, at, peopleNearBy)
 	if err != nil {
 		responseFailedWithMessage(err.Error(), ctx)
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	logger.InitNvwaLogger("info")
+	logger.InitNvwaLogger("debug")
 	agent.Init()
 	server.StartHttpServer(":8888")
 }

@@ -11,7 +11,9 @@ type SetStatusRequest struct {
 }
 
 type NewObservationRequest struct {
-	AgentId     int    `json:"agentId"`
-	CurrentTime string `json:"currentTime"`
-	Observation string `json:"observation"`
+	CurrentTime  string   `json:"currentTime"`
+	Who          int      `json:"who"`
+	Content      string   `json:"content"`
+	At           string   `json:"at"`
+	PeopleNearBy []string `json:"peopleNearBy"`
 }

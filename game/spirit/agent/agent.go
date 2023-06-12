@@ -8,10 +8,10 @@ import (
 type MemoryType int
 
 const (
-	Observation  MemoryType = 1
-	Reflection   MemoryType = 2
-	Plan         MemoryType = 3
-	Conversation MemoryType = 4
+	Observation MemoryType = 1
+	Reflection  MemoryType = 2
+	Plan        MemoryType = 3
+	Action      MemoryType = 4
 )
 
 type Agent struct {
@@ -31,7 +31,6 @@ func NewAgent(agentId int, agentSummary *common.AgentSummary) *Agent {
 		id:        agentId,
 		name:      agentSummary.Name,
 		summary:   agentSummary,
-		memories:  make([]*MemoryInfo, 1024),
 		EventChan: make(chan EventHandler),
 	}
 	//go agent.handle()

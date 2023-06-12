@@ -1,14 +1,17 @@
 package ai_generation
 
 const (
-	APIkey = "Bearer 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"
+	//OpenAIAPIkey = "Bearer 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"
+	OpenAIAPIkey = "Bearer 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"
+	AzureAPIKey  = "8644ead1d14445e5aed55731e9e072ac"
 )
 
 type ChatRole string
 
 const (
-	User   ChatRole = "user"
-	System ChatRole = "system"
+	User      ChatRole = "user"
+	System    ChatRole = "system"
+	Assistant ChatRole = "assistant"
 )
 
 type ChatMessage struct {
@@ -64,13 +67,4 @@ type InteractionModel struct {
 	Target  string `json:"target"`
 	Info    string `json:"info"`
 	Content string `json:"content"`
-}
-
-type ReflectionModel struct {
-	Reflection string   `json:"reflection"`
-	Reason     []string `json:"reason"`
-}
-
-type ImportanceModel struct {
-	Importance int `json:"importance"`
 }
